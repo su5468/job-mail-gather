@@ -7,13 +7,19 @@ from bs4 import BeautifulSoup
 import common
 
 if TYPE_CHECKING:
-    from typing import Literal, Any
+    from typing import Literal
 
 
 def parse_content(
     data: str,
     sender: Literal[
-        "linkedin", "saramin_ai", "saramin_today", "saramin_weekly", "saramin_scrap"
+        "linkedin",
+        "saramin_ai",
+        "saramin_today",
+        "saramin_weekly",
+        "saramin_scrap",
+        "wanted",
+        "blindhire",
     ],
 ) -> common.Jobs:
     """
@@ -97,6 +103,33 @@ def parse_content(
                 record["company"] = job.select("td")[0].get_text().strip()
                 record["date"] = job.select("td")[2].get_text().strip()
                 record["name"] = job.select("td")[1].get_text().strip()
+                record["location"] = "지역 미상"
+                record["origin"] = sender
+                table.append(record)
+        case "wanted":
+            jobs = soup.select("td td td td td:has(pre)")
+            jobs = jobs[::2]
+
+            table = []
+            for job in jobs:
+                record = {}
+                record["url"] = job.a["href"].strip()
+                record["company"] = job.select("div")[1].get_text().strip()
+                record["date"] = "날짜 미상"
+                record["name"] = job.select("div")[2].get_text().strip()
+                record["location"] = job.select("div")[4].get_text().strip()
+                record["origin"] = sender
+                table.append(record)
+        case "blindhire":
+            jobs = soup.select("td td td td td table:has(table)")
+
+            table = []
+            for job in jobs:
+                record = {}
+                record["url"] = job.a["href"].strip()
+                record["company"] = job.select("div")[2].get_text().strip()
+                record["date"] = "날짜 미상"
+                record["name"] = job.select("div")[3].get_text().strip()
                 record["location"] = "지역 미상"
                 record["origin"] = sender
                 table.append(record)
