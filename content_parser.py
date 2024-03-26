@@ -4,12 +4,13 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 from bs4 import BeautifulSoup
+import common
 
 if TYPE_CHECKING:
     from typing import Literal, Any
 
 
-def parse_content(data: str, sender: Literal["linkedin"]) -> list[dict[str, Any]]:
+def parse_content(data: str, sender: Literal["linkedin"]) -> common.Jobs:
     """
     주어진 메일 본문 문자열을 파싱한다.
 
@@ -37,6 +38,7 @@ def parse_content(data: str, sender: Literal["linkedin"]) -> list[dict[str, Any]
                 record["company"], record["location"] = map(
                     lambda x: x.strip(), job.p.get_text().split(" · ")
                 )
+                record["origin"] = sender
                 table.append(record)
 
-            return table
+    return table

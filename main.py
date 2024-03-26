@@ -8,11 +8,13 @@ from email.policy import default
 from imaplib import IMAP4_SSL
 
 from configparser import ConfigParser
-from datetime import date, timedelta
+from datetime import timedelta
 
 import pickle
 
+import common
 from content_parser import parse_content
+from page_maker import show_from_data
 
 if TYPE_CHECKING:
     from typing import Any
@@ -86,8 +88,8 @@ def get_search_criterion(section: SectionProxy, days: int) -> list[str]:
     Returns:
         list[str]: CRITERION 인자에 사용할 수 있는 리스트. 언패킹해서 IMAP 객체의 SEARCH 명령에 넘겨줄 수 있다.
     """
-    start_date = date.today() - timedelta(days=days)
-    start_str = start_date.strftime("%d-%b-%Y")
+    start_date = common.get_now() - timedelta(days=days)
+    start_str = common.get_datestr(start_date)
     criteria = ["SINCE", start_str]
     criteria += ["FROM", section["address"], "SUBJECT", section["subject"]]
     return criteria
@@ -135,6 +137,7 @@ def main() -> None:
                 body = mail_data.get_body()
                 table += parse_content(body.get_content(), sender_name)
 
+        show_from_data(table)
         imap.close()
 
 
