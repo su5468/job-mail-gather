@@ -10,7 +10,12 @@ if TYPE_CHECKING:
     from typing import Literal, Any
 
 
-def parse_content(data: str, sender: Literal["linkedin"]) -> common.Jobs:
+def parse_content(
+    data: str,
+    sender: Literal[
+        "linkedin", "saramin_ai", "saramin_today", "saramin_weekly", "saramin_scrap"
+    ],
+) -> common.Jobs:
     """
     주어진 메일 본문 문자열을 파싱한다.
 
@@ -38,6 +43,61 @@ def parse_content(data: str, sender: Literal["linkedin"]) -> common.Jobs:
                 record["company"], record["location"] = map(
                     lambda x: x.strip(), job.p.get_text().split(" · ")
                 )
+                record["date"] = "날짜 미상"
+                record["origin"] = sender
+                table.append(record)
+        case "saramin_ai":
+            jobs = soup.select("td td tr")
+            jobs = jobs[1:11] + jobs[12:]
+
+            table = []
+            for job in jobs:
+                record = {}
+                record["url"] = job.a["href"].strip()
+                record["name"] = job.strong.get_text().strip()
+                record["date"] = job.p.span.get_text().strip()
+                record["company"] = job.p.get_text().strip()[: -len(record["date"])]
+                record["location"] = "지역 미상"
+                record["origin"] = sender
+                table.append(record)
+        case "saramin_today":
+            jobs = soup.select("td td tr td div a:has(p)")
+
+            table = []
+            for job in jobs:
+                record = {}
+                record["url"] = job["href"].strip()
+                record["company"] = job.span.p.select("span")[0].get_text().strip()
+                record["date"] = job.span.p.select("span")[1].get_text().strip()
+                record["name"] = job.span.select("p")[1].get_text()
+                record["location"] = "지역 미상"
+                record["origin"] = sender
+                table.append(record)
+        case "saramin_weekly":
+            jobs = soup.select("td td td tr:has(a)")
+
+            table = []
+            for job in jobs:
+                record = {}
+                record["url"] = job.a["href"].strip()
+                record["company"] = job.p.get_text().strip()
+                record["date"] = job.select("div")[1].get_text().strip()
+                record["name"] = job.a.get_text().strip()
+                record["location"] = "지역 미상"
+                record["origin"] = sender
+                table.append(record)
+        case "saramin_scrap":
+            jobs = soup.select("td td tr:has(a)")
+            jobs = jobs[1:-1]
+
+            table = []
+            for job in jobs:
+                record = {}
+                record["url"] = job.a["href"].strip()
+                record["company"] = job.select("td")[0].get_text().strip()
+                record["date"] = job.select("td")[2].get_text().strip()
+                record["name"] = job.select("td")[1].get_text().strip()
+                record["location"] = "지역 미상"
                 record["origin"] = sender
                 table.append(record)
 

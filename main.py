@@ -122,7 +122,6 @@ def main() -> None:
                 continue
 
             _, all_nums = imap.search(None, *get_search_criterion(section, recent_days))
-            print(all_nums)
 
             for num in all_nums[0].split():
                 _, raw_data = imap.fetch(num, "(RFC822)")
@@ -135,6 +134,9 @@ def main() -> None:
                 already.add(message_id)
                 sender_name = section_name.split(".")[1]
                 body = mail_data.get_body()
+                # with open("test.txt", "wt", encoding="utf8") as f:
+                #     print(body.get_content(), file=f)
+                # break
                 table += parse_content(body.get_content(), sender_name)
 
         show_from_data(table)

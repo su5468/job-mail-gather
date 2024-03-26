@@ -79,6 +79,7 @@ def make_body(html: Tag, soup: BeautifulSoup, content: common.Jobs) -> Tag:
         div_jobLocation = make_tag_inside_of(
             div_job, soup, "div", attrs={"class": "div-jobLocation"}
         )
+        div_date = make_tag_inside_of(div_job, soup, "div", attrs={"class": "div-date"})
         div_origin = make_tag_inside_of(
             div_job, soup, "div", attrs={"class": "div-origin"}
         )
@@ -86,6 +87,7 @@ def make_body(html: Tag, soup: BeautifulSoup, content: common.Jobs) -> Tag:
         span_companyName.string = record["company"]
         span_jobType.string = record["name"]
         div_jobLocation.string = record["location"]
+        div_date.string = record["date"]
         div_origin.string = record["origin"]
 
     return body
