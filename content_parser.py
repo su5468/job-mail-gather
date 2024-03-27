@@ -46,10 +46,10 @@ def parse_content(
                 record = {}
                 record["url"] = job.a["href"].strip()
                 record["name"] = job.a.get_text().strip()
+                record["date"] = "날짜 미상"
                 record["company"], record["location"] = map(
                     lambda x: x.strip(), job.p.get_text().split(" · ")
                 )
-                record["date"] = "날짜 미상"
                 record["origin"] = sender
                 table.append(record)
         case "saramin_ai":
@@ -73,9 +73,9 @@ def parse_content(
             for job in jobs:
                 record = {}
                 record["url"] = job["href"].strip()
-                record["company"] = job.span.p.select("span")[0].get_text().strip()
-                record["date"] = job.span.p.select("span")[1].get_text().strip()
                 record["name"] = job.span.select("p")[1].get_text()
+                record["date"] = job.span.p.select("span")[1].get_text().strip()
+                record["company"] = job.span.p.select("span")[0].get_text().strip()
                 record["location"] = "지역 미상"
                 record["origin"] = sender
                 table.append(record)
@@ -86,9 +86,9 @@ def parse_content(
             for job in jobs:
                 record = {}
                 record["url"] = job.a["href"].strip()
-                record["company"] = job.p.get_text().strip()
-                record["date"] = job.select("div")[1].get_text().strip()
                 record["name"] = job.a.get_text().strip()
+                record["date"] = job.select("div")[1].get_text().strip()
+                record["company"] = job.p.get_text().strip()
                 record["location"] = "지역 미상"
                 record["origin"] = sender
                 table.append(record)
@@ -100,9 +100,9 @@ def parse_content(
             for job in jobs:
                 record = {}
                 record["url"] = job.a["href"].strip()
-                record["company"] = job.select("td")[0].get_text().strip()
-                record["date"] = job.select("td")[2].get_text().strip()
                 record["name"] = job.select("td")[1].get_text().strip()
+                record["date"] = job.select("td")[2].get_text().strip()
+                record["company"] = job.select("td")[0].get_text().strip()
                 record["location"] = "지역 미상"
                 record["origin"] = sender
                 table.append(record)
@@ -114,9 +114,9 @@ def parse_content(
             for job in jobs:
                 record = {}
                 record["url"] = job.a["href"].strip()
-                record["company"] = job.select("div")[1].get_text().strip()
-                record["date"] = "날짜 미상"
                 record["name"] = job.select("div")[2].get_text().strip()
+                record["date"] = "날짜 미상"
+                record["company"] = job.select("div")[1].get_text().strip()
                 record["location"] = job.select("div")[4].get_text().strip()
                 record["origin"] = sender
                 table.append(record)
@@ -127,9 +127,9 @@ def parse_content(
             for job in jobs:
                 record = {}
                 record["url"] = job.a["href"].strip()
-                record["company"] = job.select("div")[2].get_text().strip()
-                record["date"] = "날짜 미상"
                 record["name"] = job.select("div")[3].get_text().strip()
+                record["date"] = "날짜 미상"
+                record["company"] = job.select("div")[2].get_text().strip()
                 record["location"] = "지역 미상"
                 record["origin"] = sender
                 table.append(record)

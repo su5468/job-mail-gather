@@ -95,6 +95,14 @@ def get_search_criterion(section: SectionProxy, days: int) -> list[str]:
     return criteria
 
 
+def remove_duplicated_records(table: common.Jobs) -> common.Jobs:
+    keys = "url", "name", "date", "company", "location", "origin"
+    temp = set()
+    for record in table:
+        temp.add(tuple(record.values()))
+    return [dict(zip(keys, e)) for e in temp]
+
+
 def main() -> None:
     """
     필요한 메일을 IMAP으로 모두 읽어와서,
@@ -139,6 +147,7 @@ def main() -> None:
                 # break
                 table += parse_content(body.get_content(), sender_name)
 
+        table = remove_duplicated_records(table)
         show_from_data(table)
         imap.close()
 

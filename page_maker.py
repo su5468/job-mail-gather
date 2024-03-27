@@ -41,6 +41,7 @@ def make_head(html: Tag, soup: BeautifulSoup) -> Tag:
     make_tag_inside_of(
         head, soup, "link", attrs={"rel": "stylesheet", "href": "styles.css"}
     )
+    make_tag_inside_of(head, soup, "script", attrs={"src": "script.js", "defer": True})
     title = make_tag_inside_of(head, soup, "title")
     title.string = "Job Mail Gather"
 
@@ -53,15 +54,35 @@ def make_body(html: Tag, soup: BeautifulSoup, content: common.Jobs) -> Tag:
     h1 = make_tag_inside_of(header, soup, "h1")
     h1.string = "Job Mail 리스트"
     h2 = make_tag_inside_of(header, soup, "h2")
+    h2.string = f"기준일: {common.get_now()}"
     hr = make_tag_inside_of(body, soup, "hr")
 
     article = make_tag_inside_of(body, soup, "article")
+    form_search = make_tag_inside_of(article, soup, "form", attrs={"class": "search"})
+    input_search = make_tag_inside_of(
+        form_search,
+        soup,
+        "input",
+        attrs={"class": "search", "id": "inputSearch", "autocomplete": "off"},
+    )
+    button_search = make_tag_inside_of(
+        form_search,
+        soup,
+        "button",
+        attrs={
+            "class": "search",
+            "type": "submit",
+            "onclick": 'event.preventDefault(); search(document.getElementById("inputSearch").value);',
+        },
+    )
+    button_search.string = "검색"
 
-    h2.string = f"기준일: {common.get_now()}"
+    ul = make_tag_inside_of(article, soup, "ul")
+
     for record in content:
-        ul = make_tag_inside_of(article, soup, "ul")
+        li = make_tag_inside_of(ul, soup, "li")
         div_job = make_tag_inside_of(
-            ul,
+            li,
             soup,
             "div",
             attrs={

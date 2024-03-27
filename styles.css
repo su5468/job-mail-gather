@@ -3,6 +3,7 @@
 :root {
     --main-color: #0064FF;
     --sub-color: #202632;
+    --back-color: #fafafa;
     font-family: "Noto Sans KR";
     color: var(--sub-color);
     word-break: keep-all;
@@ -12,20 +13,79 @@ header {
     text-align: center;
 }
 
+.search {
+    font-family: inherit;
+    font-weight: 700;
+    font-size: 1.5rem;
+}
+
+form.search {
+    text-align: center;
+}
+
+input.search {
+    padding-left: 2rem;
+    background-color: var(--back-color);
+    border-radius: 20px 0 0 20px;
+    border: solid 3px var(--sub-color);
+    width: 80vw;
+    height: 2.5rem;
+}
+
+input.search:focus {
+    border-color: var(--main-color);
+    outline: 0;
+}
+
+button.search {
+    box-sizing: content-box;
+    background-color: var(--back-color);
+    border-radius: 0 20px 20px 0;
+    border: solid 3px var(--sub-color);
+    width: 6rem;
+    height: 2.5rem;
+}
+
+button.search:hover {
+    border-color: var(--main-color);
+    color: var(--main-color);
+}
+
+button.search:active {
+    background-color: var(--main-color);
+    border-color: var(--main-color);
+    color: var(--back-color);
+}
+
 ul {
     padding-inline: 3vw;
+    list-style: none;
+}
+
+li {
+    margin: 1rem;
+    transition: 0.2s ease-in-out;
+}
+
+li.invisible {
+    opacity: 0;
+    transform: translateX(-100px);
+}
+
+li.hidden {
+    display: none;
 }
 
 .div-job {
     padding: 1rem 2rem 1.4rem 2rem;
-    background-color: #fafafa;
+    background-color: var(--back-color);
     border-left: 3px solid var(--sub-color);
     transition: 0.3s ease-in-out;
 }
 
 .div-job:hover {
     background-color: var(--main-color);
-    color: #fafafa;
+    color: var(--back-color);
     cursor: pointer;
 }
 
