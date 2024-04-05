@@ -3,6 +3,8 @@
 from __future__ import annotations
 from typing import TYPE_CHECKING
 
+import re
+from datetime import datetime, timedelta
 from bs4 import BeautifulSoup
 import common
 
@@ -12,6 +14,7 @@ if TYPE_CHECKING:
 
 def parse_content(
     data: str,
+    mail_date: datetime,
     sender: Literal[
         "linkedin",
         "saramin_ai",
@@ -62,7 +65,15 @@ def parse_content(
                 record["url"] = job.a["href"].strip()
                 record["name"] = job.strong.get_text().strip()
                 record["date"] = job.p.span.get_text().strip()
-                record["company"] = job.p.get_text().strip()[: -len(record["date"])]
+                datelen = len(record["date"])
+                try:
+                    record["date"] = (
+                        mail_date
+                        + timedelta(days=int(re.search(r"\d+", record["date"]).group()))
+                    ).strftime("~%Y-%m-%d")
+                except (TypeError, ValueError, AttributeError):
+                    pass
+                record["company"] = job.p.get_text().strip()[:-datelen]
                 record["location"] = "지역 미상"
                 record["origin"] = sender
                 table.append(record)
@@ -88,6 +99,15 @@ def parse_content(
                 record["url"] = job.a["href"].strip()
                 record["name"] = job.a.get_text().strip()
                 record["date"] = job.select("div")[1].get_text().strip()
+                try:
+                    record["date"] = datetime.strptime(
+                        record["date"][-5:], "%m/%d"
+                    ).replace(year=mail_date.year)
+                    if record["date"] < mail_date:
+                        record["date"] = record["date"].replace(year=mail_date.year + 1)
+                    record["date"] = record["date"].strftime("~%Y-%m-%d")
+                except (TypeError, ValueError, IndexError):
+                    pass
                 record["company"] = job.p.get_text().strip()
                 record["location"] = "지역 미상"
                 record["origin"] = sender
@@ -102,6 +122,20 @@ def parse_content(
                 record["url"] = job.a["href"].strip()
                 record["name"] = job.select("td")[1].get_text().strip()
                 record["date"] = job.select("td")[2].get_text().strip()
+                try:
+                    if record["date"].startswith("D-"):
+                        record["date"] = mail_date + int(record["date"][2:])
+                    else:
+                        record["date"] = datetime.strptime(
+                            record["date"][:-3], "%m/%d"
+                        ).replace(year=mail_date.year)
+                        if record["date"] < mail_date:
+                            record["date"] = record["date"].replace(
+                                year=mail_date.year + 1
+                            )
+                    record["date"].strftime("~%Y-%m-%d")
+                except (TypeError, ValueError, IndexError):
+                    pass
                 record["company"] = job.select("td")[0].get_text().strip()
                 record["location"] = "지역 미상"
                 record["origin"] = sender

@@ -8,7 +8,7 @@ function search(keyword) {
         elem.classList.add("invisible");
         setTimeout(() => {
             elem.classList.add("hidden");
-            if (text.includes(keyword)) {
+            if (text.toLowerCase().includes(keyword.toLowerCase())) {
                 elem.classList.remove("hidden");
                 setTimeout(() => {elem.classList.remove("invisible");}, 200)
             }

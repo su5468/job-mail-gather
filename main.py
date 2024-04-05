@@ -8,7 +8,7 @@ from email.policy import default
 from imaplib import IMAP4_SSL
 
 from configparser import ConfigParser
-from datetime import timedelta
+from datetime import datetime, timedelta, timezone
 
 import pickle
 
@@ -134,6 +134,11 @@ def main() -> None:
             for num in all_nums[0].split():
                 _, raw_data = imap.fetch(num, "(RFC822)")
                 mail_data = mail_parser.parsebytes(raw_data[0][1])
+                mail_date = (
+                    datetime.strptime(mail_data["Date"], "%a, %d %b %Y %H:%M:%S %z")
+                    .astimezone(timezone(timedelta(seconds=32400)))
+                    .replace(tzinfo=None)
+                )
                 message_id = mail_data["Message-ID"]
 
                 if message_id in already:
@@ -142,10 +147,7 @@ def main() -> None:
                 already.add(message_id)
                 sender_name = section_name.split(".")[1]
                 body = mail_data.get_body()
-                # with open("test.txt", "wt", encoding="utf8") as f:
-                #     print(body.get_content(), file=f)
-                # break
-                table += parse_content(body.get_content(), sender_name)
+                table += parse_content(body.get_content(), mail_date, sender_name)
 
         table = remove_duplicated_records(table)
         show_from_data(table)
